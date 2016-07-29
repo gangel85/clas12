@@ -169,7 +169,45 @@ public class Geant4Basic implements IGeant4Volume {
         this.volumeID = new int[id.length];
         System.arraycopy(id, 0, volumeID, 0, volumeID.length);
     }
+// Modify the method so print somethng working in GEMC without using a database.
+    public String gemcString() {
+        StringBuilder str = new StringBuilder();
+        if (this.getMother() == null) {
+            str.append(String.format("%18s ", this.getName()));
+        } else {
+            str.append(String.format("%18s | %8s", this.getName(), this.getMother().getName()));
+        }
+        //Line added by gangel to understand the print out 
+       str.append(String.format("| test"));
+        str.append(String.format("| %8.4f*cm %8.4f*cm %8.4f*cm",
+                this.volumePosition.x(), this.volumePosition.y(), this.volumePosition.z()));
+        str.append(String.format("| ordered: %s ", new StringBuilder(this.transformationOrder).reverse().toString()));
+        double[] rotate = this.getRotation();
+        for (int irot = 0; irot < rotate.length; irot++) {
+            str.append(String.format(" %8.4f*deg ", Math.toDegrees(rotate[rotate.length - irot - 1])));
+        }
+        // test for color, to add than as attribute
+        str.append("| 0077b3");
+        str.append(String.format("| %8s |", this.getType()));
+        for (int ipar = 0; ipar < volumeParameters.length; ipar++) {
+            str.append(String.format("%12.4f*%s", volumeParameters[ipar], volumeParUnits[ipar]));
+        }
+        //append the material, need to understand where is the class for the material and use it
+        str.append("| G4_Al");
+        //should find a way reasonable to do next command **STUDY IT**
+        str.append("| no |   1|    1|   1 |1 | no | no |no ");
+        //I cannot enter in this part up to now, **NEED TO UNDERSTAND**
+      //  str.append(" | ");
+        int[] ids = this.getId();
+        for (int id : ids) {
+            str.append(String.format("%4d", id));
+        }
 
+        return str.toString();
+    }
+    
+    // The previous function starts from here:
+    /*
     public String gemcString() {
         StringBuilder str = new StringBuilder();
         if (this.getMother() == null) {
@@ -197,7 +235,7 @@ public class Geant4Basic implements IGeant4Volume {
 
         return str.toString();
     }
-
+*/
     public static void main(String[] args) {
         List<Geant4Basic> volumes = new ArrayList<>();
         for (int loop = 0; loop < 20; loop++) {
